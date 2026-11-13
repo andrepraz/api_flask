@@ -12,7 +12,6 @@ CORS(app)
 # ==========================
 
 def conectar():
-
     return sqlite3.connect(
         "clientes.sqlite"
     )
@@ -23,28 +22,18 @@ def conectar():
 # ==========================
 
 def criar_tabela():
-
     conn = conectar()
-
     cursor = conn.cursor()
-
     cursor.execute("""
-
         CREATE TABLE IF NOT EXISTS cliente(
-
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-
             nome TEXT NOT NULL,
             telefone TEXT NOT NULL,
             cpf TEXT NOT NULL
-
         )
-
     """)
-
     conn.commit()
     conn.close()
-
 
 criar_tabela()
 
@@ -54,7 +43,6 @@ criar_tabela()
 
 @app.route("/")
 def index():
-
     return render_template(
         "index.html"
     )
@@ -64,33 +52,24 @@ def index():
 # LISTAR
 # ==========================
 
-@app.route("/clientes",
-           methods=["GET"])
+@app.route("/clientes", methods=["GET"])
 def listar_clientes():
-
     conn = conectar()
-
     cursor = conn.cursor()
-
     cursor.execute(
         "SELECT * FROM cliente"
     )
-
     registros = cursor.fetchall()
-
     conn.close()
 
     lista = []
-
     for item in registros:
-
         lista.append({
             "id": item[0],
             "nome": item[1],
             "telefone": item[2],
             "cpf": item[3]
         })
-
     return jsonify(lista)
 
 
@@ -98,41 +77,17 @@ def listar_clientes():
 # INSERIR
 # ==========================
 
-@app.route("/clientes",
-           methods=["POST"])
+@app.route("/clientes", methods=["POST"])
 def inserir_cliente():
-
     dados = request.json
-
     conn = conectar()
-
     cursor = conn.cursor()
-
     cursor.execute("""
-
-        INSERT INTO cliente(
-            nome,
-            telefone,
-            cpf
-        )
-
-        VALUES(
-            ?,
-            ?,
-            ?
-        )
-
-    """, (
-
-        dados["nome"],
-        dados["telefone"],
-        dados["cpf"]
-
-    ))
-
+        INSERT INTO cliente(nome,telefone,cpf)
+        VALUES(?,?,?)
+    """, (dados["nome"],dados["telefone"],dados["cpf"]))
     conn.commit()
     conn.close()
-
     return jsonify({
         "mensagem":
         "Cliente inserido"
@@ -143,37 +98,16 @@ def inserir_cliente():
 # ALTERAR
 # ==========================
 
-@app.route("/clientes/<int:id>",
-           methods=["PUT"])
+@app.route("/clientes/<int:id>", methods=["PUT"])
 def alterar_cliente(id):
-
     dados = request.json
-
     conn = conectar()
-
     cursor = conn.cursor()
-
     cursor.execute("""
-
         UPDATE cliente
-
-        SET
-
-            nome=?,
-            telefone=?,
-            cpf=?
-
+        SET nome=?,telefone=?,cpf=?
         WHERE id=?
-
-    """, (
-
-        dados["nome"],
-        dados["telefone"],
-        dados["cpf"],
-        id
-
-    ))
-
+    """, (dados["nome"],dados["telefone"],dados["cpf"],id))
     conn.commit()
     conn.close()
 
@@ -187,22 +121,12 @@ def alterar_cliente(id):
 # EXCLUIR
 # ==========================
 
-@app.route("/clientes/<int:id>",
-           methods=["DELETE"])
+@app.route("/clientes/<int:id>", methods=["DELETE"])
 def excluir_cliente(id):
-
     conn = conectar()
-
     cursor = conn.cursor()
-
     cursor.execute(
-
-        "DELETE FROM cliente WHERE id=?",
-
-        (id,)
-
-    )
-
+        "DELETE FROM cliente WHERE id=?",(id,))
     conn.commit()
     conn.close()
 
